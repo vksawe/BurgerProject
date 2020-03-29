@@ -1,9 +1,16 @@
 import React from 'react'
+import classes from './Burger.css'
 import BurgerIngredients from './BurgerIngredients/BurgerIngredients'
-const Burger=(props)=>{
+const burger=(props)=>{
 return(
+    <div className={classes.Burger}> 
+    <BurgerIngredients type="bread-top"/>
     <BurgerIngredients type="salad"/>
+    <BurgerIngredients type="meat"/>
+    <BurgerIngredients type="bread-bottom"/>
+    </div>
+    
 )
 }
 
-export default Burger;
+export default burger;
