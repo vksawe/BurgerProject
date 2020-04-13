@@ -1,5 +1,6 @@
 import React from 'react'
 import Auxillary from '../../hoc/Auxillary'
+import Button from '../../components/UI/Button/Button'
 const computeOrderSummary=(props)=>{
     const ingredientsKeyArray=Object.keys(props.ingredients)
     let Ordersummary=ingredientsKeyArray.map((igrKey)=>{
@@ -15,7 +16,10 @@ const computeOrderSummary=(props)=>{
             <ul>
                 {Ordersummary}
             </ul>
+    <strong><p>Sum Total: {props.sum}</p></strong>
             <p>Continue to check out?</p>
+            <Button btnType="Success" clicked={props.purchaseContinue} >CONTINUE</Button>
+            <Button btnType="Danger" clicked={props.purchaseCancel}>Cancel</Button>
         </Auxillary>
     ) 
 
