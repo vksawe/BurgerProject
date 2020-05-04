@@ -8,55 +8,109 @@ class ContactData extends Component{
     state={
         contactForm:{
             
-                    name:{elementType:'input',
-                    elementConfig:{
-                        type:'text',
-                        placeholder:'Your name'
-                    },
-                    value:''
+                    name:
+                        {elementType:'input',
+                        elementConfig:{
+                            type:'text',
+                            placeholder:'Your name'
+                        },
+                        value:'',
+                        valid:false,
+                        validation:{
+                            required:true
 
-                },
-                    street:{elementType:'input',
-                    elementConfig:{
-                        type:'text',
-                        placeholder:'Street'
-                    },
-                    value:''
+                        },
+                        touched:false
 
-                },
-                    zipcode:{elementType:'input',
-                    elementConfig:{
-                        type:'text',
-                        placeholder:'Zip Code'
                     },
-                    value:''
+                  street:
+                            {elementType:'input',
+                            elementConfig:{
+                                type:'text',
+                                placeholder:'Street'
+                            },
+                            value:'',
+                            valid:false,
+                            validation:{
+                                required:true
 
-                },
-                    county:{elementType:'input',
-                    elementConfig:{
-                        type:'text',
-                        placeholder:'Country'
-                    },
-                    value:''
+                            },
+                            touched:false
 
-                },
-                    email:{elementType:'input',
-                    elementConfig:{
-                        type:'text',
-                        placeholder:'Your email'
-                    },
-                    value:''
-                },
+                        },
+                    zipcode:
+                            {elementType:'input',
+                            elementConfig:{
+                                type:'text',
+                                placeholder:'Zip Code'
+                            },
+                            value:'',
+                            valid:false,
+                            validation:{
+                                required:true,
+                                minLength:5,
+                                maxLength:5
+
+                            },
+                                    touched:false
+
+                                },
+                    county:
+                                {elementType:'input',
+                                elementConfig:{
+                                    type:'text',
+                                    placeholder:'Country'
+                                },
+                                value:'',
+                                valid:false,
+                                validation:{
+                                    required:true
+
+                                },
+                                touched:false
+
+                            },
+                    email:
+                                        {elementType:'input',
+                                        elementConfig:{
+                                            type:'text',
+                                            placeholder:'Your email'
+                                        },
+                                        value:'',
+                                        valid:false,
+                                        validation:{
+                                            required:true
+
+                                        },
+                                            touched:false
+                                    },
                     deliverymethod:{elementType:'select',
-                    elementConfig:{
-                        options:[{value:'fastest', displayValue:'Fastest'},
-                                {value:'cheapest', displayValue:'Cheapest'}                                      ]
-                    }
-                }
-        },
-        loading:false
+                                        elementConfig:{
+                                            options:[{value:'fastest', displayValue:'Fastest'},
+                                                    {value:'cheapest', displayValue:'Cheapest'}                                      ]
+                                        },
+                                        valid:true,
+                                        validation:{}
+                                    }
+                            },
+                            formisValid:false,
+                            value:'cheapest',
+                            loading:false
+                        }
+    checkValidity(value,rules){
+        let isValid=false;
+        if(rules.required){
+           
+            isValid=value.trim()!=='';
+        }
+        if(rules.minLength){
+            isValid=value.length>=rules.minLength
+        }
+        if(rules.maxLength){
+            isValid=value.length<=rules.maxLength
+        }
+        return isValid
     }
-
     OrderHandler=(event)=>{
         event.preventDefault();
           this.setState({loading:true})
@@ -81,11 +135,24 @@ class ContactData extends Component{
     }
 
     inputChangedHandler=(event,inputIdentifier)=>{
+        
        const updatedOrderForm={...this.state.contactForm}
+       
        const updatedformElement={...updatedOrderForm[inputIdentifier]}
        updatedformElement.value=event.target.value;
+       updatedformElement.valid=this.checkValidity(updatedformElement.value,updatedformElement.validation)
+       updatedformElement.touched=true;
        updatedOrderForm[inputIdentifier]=updatedformElement
-       this.setState({contactForm:updatedOrderForm})
+       
+       
+       let formValidity=true;
+       
+       for(let formInputIdentifier in updatedOrderForm){
+           formValidity=updatedOrderForm[formInputIdentifier].valid && formValidity
+       }
+      
+      
+       this.setState({contactForm:updatedOrderForm,formisValid:formValidity})
     }
     
     render(){
@@ -101,12 +168,17 @@ class ContactData extends Component{
                 placeholder={this.state.contactForm[key].elementConfig.placeholder}
                 options={this.state.contactForm[key].elementConfig.options||null}
                 changed={(event)=>this.inputChangedHandler(event,key)}
+                invalid={!this.state.contactForm[key].valid}
+                shouldValidate={this.state.contactForm[key].validation}
+                touched={this.state.contactForm[key].touched}
+                
                 />
             )
         }
         let form=<form onSubmit={this.OrderHandler}>
         {formElements}
-        <Button btnType="Success" >ORDER</Button>
+        {console.log(this.state)}
+        <Button disabled={!this.state.formisValid} btnType="Success" >ORDER</Button>
     </form>
         if(this.state.loading){
             form=<Spinner/>
