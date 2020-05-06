@@ -4,6 +4,7 @@ import Button from '../../components/UI/Button/Button'
 import classes from './ContactData.module.css'
 import Spinner from '../../components/UI/Spinner/Spinner'
 import Input from '../../components/UI/input/input'
+import {connect} from 'react-redux'
 class ContactData extends Component{
     state={
         contactForm:{
@@ -98,7 +99,7 @@ class ContactData extends Component{
                             loading:false
                         }
     checkValidity(value,rules){
-        let isValid=false;
+        let isValid=true;
         if(rules.required){
            
             isValid=value.trim()!=='';
@@ -121,7 +122,7 @@ class ContactData extends Component{
           
             const data={
                 customer:formData,
-                ingredients:this.props.ingredients,
+                ingredients:this.props.ings,
                 price:this.props.price
             }
             axios.post('/orders.json',data).then((response)=>{
@@ -177,7 +178,7 @@ class ContactData extends Component{
         }
         let form=<form onSubmit={this.OrderHandler}>
         {formElements}
-        {console.log(this.state)}
+        
         <Button disabled={!this.state.formisValid} btnType="Success" >ORDER</Button>
     </form>
         if(this.state.loading){
@@ -193,4 +194,12 @@ class ContactData extends Component{
     }
 }
 
-export default ContactData;
+const mapStatetoProps=state=>{
+    return{
+        ings:state.ingredients,
+        price:state.price
+    }
+}
+
+
+export default connect(mapStatetoProps)( ContactData);
