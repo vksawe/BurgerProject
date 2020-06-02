@@ -7,28 +7,31 @@ import Modal from '../../components/UI/Modal/Modal'
 import ComputeOrderSummary from './computeOrderSummary'
 import Spinner from '../../components/UI/Spinner/Spinner'
 import axios from '../../order-instance'
-import * as actionTypes from '../../store/actions'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
-
+import * as burgerBuilderActions from '../../store/actions/index'
 class BurgerBuilder extends Component {
     state={
             
             
             purchaseable:false,
             purchasing:false,
-            loading:false,
-            error:false
+            error:false,
+            // loading:false,
+            // error:false
     }
 
 
-    // componentDidMount(){
+    componentDidMount(){
     //     console.log(this.props)
     //     axios.get("https://burger-project-f4a00.firebaseio.com/ingredients.json").then((response)=>{
     //         this.setState({ingredients:response.data})
     //     }).catch((error)=>{
     //         this.setState({error:true})
     //     })
-    // }
+        this.props.onInitIngredients();
+        console.log(this.props)
+        
+     }
   
 
     render(){
@@ -73,6 +76,7 @@ class BurgerBuilder extends Component {
 
         const purchaseContinueHandler=()=>{
           
+            this.props.onInitPurchase();
                 
             this.props.history.push('/checkout')
                    
@@ -125,7 +129,7 @@ class BurgerBuilder extends Component {
             this.setState({purchasing:true})
         }
 
-        let burger=this.state.error?<p>Ingredients Cant be Loaded</p>:<Spinner/>
+        let burger=this.props.error?<p>Ingredients Cant be Loaded</p>:<Spinner/>
         if(this.props.ings){
 
          burger=(<Auxillary>
@@ -153,15 +157,18 @@ class BurgerBuilder extends Component {
 
  const mapStateToProps=state=>{
     return{
-        ings:state.ingredients,
-        price:state.price
+        error:state.burgerBuilder.error,
+        ings:state.burgerBuilder.ingredients,
+        price:state.burgerBuilder.price
     }
  }
 
  const mapDispatchToProps=dispatch=>{
      return{
-        onIngredientAdded:(ingredientName)=>dispatch({type:actionTypes.ADD_INGREDIENT,ingredientName}),
-        onIngredientRemoved:(ingredientName)=>dispatch({type:actionTypes.REMOVE_INGREDIENT,ingredientName})
+        onInitIngredients:()=>dispatch(burgerBuilderActions.initIngridients()),
+        onIngredientAdded:(ingredientName)=>dispatch(burgerBuilderActions.addIngredient(ingredientName)),
+        onIngredientRemoved:(ingredientName)=>dispatch(burgerBuilderActions.removeIngredient(ingredientName))
+        ,onInitPurchase:()=>dispatch(burgerBuilderActions.purchaseInit())
     }
 }
 
